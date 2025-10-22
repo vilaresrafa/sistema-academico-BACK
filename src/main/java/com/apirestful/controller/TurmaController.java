@@ -1,25 +1,47 @@
 package com.apirestful.controller;
 
-import com.apirestful.model.Turma;
+import com.apirestful.model.*;
 import com.apirestful.service.TurmaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/turmas")
-public class TurmaController {
-    private final TurmaService service;
+import java.util.List;
 
-    public TurmaController(TurmaService service) {
-        this.service = service;
+@CrossOrigin("http://localhost:5173")
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("turmas")
+public class TurmaController {
+
+    private final TurmaService turmaService;
+
+    @GetMapping
+    public List<Turma> recuperarTurmas(
+            @RequestParam(required = false) String nome) {
+        return turmaService.recuperarTurmasPorNome(nome);
+    }
+    // @GetMapping("/{id}")
+    // public Turma getById(@PathVariable Long id) {
+    //    return turmaService.getById(id);
+    // }
+
+    @GetMapping("{idTurma}")
+    public ResponseEntity<?> recuperarTurmaPorId(
+            @PathVariable("idTurma") Long id ) {
+        Turma turma = turmaService.recuperarTurmaPorId(id);
+        TurmaDTO turmaDTO = new TurmaDTO(turma.getId(), turma.getAno(), turma.getPeriodo(), turma.getDisciplina(), turma.getProfessor()) ;
+        System.out.println(turmaDTO.id());
+        return ResponseEntity.ok(turmaDTO);
     }
 
     @PostMapping
     public Turma create(@RequestBody Turma turma) {
-        return service.create(turma);
+        return turmaService.create(turma);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        service.delete(id);
+        turmaService.delete(id);
     }
 }
