@@ -53,10 +53,14 @@ public class ApirestfulApplication implements CommandLineRunner {
         Turma t2 = new Turma(2025, "A002", "a002", "2º semestre", p2, d1);
         Turma t3 = new Turma(2025, "B001", "b001", "1º semestre", p3, d3);
         Turma t4 = new Turma(2025, "B002", "b002", "2º semestre", p4, d4);
+        Turma t5 = new Turma(2025, "C001", "c001", "2º semestre", p4, d1);
+        Turma t6 = new Turma(2025, "D001", "d001", "2º semestre", p4, d2);
         turmaRepository.save(t1);
         turmaRepository.save(t2);
         turmaRepository.save(t3);
         turmaRepository.save(t4);
+        turmaRepository.save(t5);
+        turmaRepository.save(t6);
 
         // Alunos - Turma A001 (Banco de Dados)
         Aluno a1 = new Aluno("João", "joao", "joao@email.com", t1);

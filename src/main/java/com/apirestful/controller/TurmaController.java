@@ -18,8 +18,10 @@ public class TurmaController {
 
     @GetMapping
     public List<Turma> recuperarTurmas(
-            @RequestParam(required = false) String nome) {
-        return turmaService.recuperarTurmasPorNome(nome);
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) Long disciplinaId
+    ) {
+        return turmaService.recuperarTurmas(nome, disciplinaId);
     }
     // @GetMapping("/{id}")
     // public Turma getById(@PathVariable Long id) {

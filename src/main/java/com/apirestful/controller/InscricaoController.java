@@ -4,6 +4,8 @@ import com.apirestful.model.Inscricao;
 import com.apirestful.service.InscricaoService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/inscricoes")
 public class InscricaoController {
@@ -12,6 +14,12 @@ public class InscricaoController {
     public InscricaoController(InscricaoService service) {
         this.service = service;
     }
+
+    @GetMapping
+    public List<Inscricao> listarPorTurma(@RequestParam Long turmaId) {
+        return service.listarPorTurma(turmaId);
+    }
+
 
     @PostMapping
     public Inscricao create(@RequestBody Inscricao inscricao) {

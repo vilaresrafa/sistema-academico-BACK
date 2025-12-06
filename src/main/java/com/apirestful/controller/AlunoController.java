@@ -79,4 +79,12 @@ public class AlunoController {
     public List<Aluno> recuperarAlunosPorSlugDaTurma(@PathVariable("slugTurma") String slugTurma) {
         return alunoService.recuperarAlunosPorSlugDaTurma(slugTurma);
     }
+
+    @GetMapping("/nao-inscritos")
+    public List<Aluno> recuperarAlunosNaoInscritos(
+            @RequestParam Long turmaId,
+            @RequestParam(required = false) String nome
+    ) {
+        return alunoService.recuperarAlunosNaoInscritos(turmaId, nome);
+    }
 }

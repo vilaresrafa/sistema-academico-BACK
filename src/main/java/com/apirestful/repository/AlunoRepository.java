@@ -40,4 +40,18 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     @Query("select a from Aluno a left outer join fetch a.turma t where t.slug = :slugTurma")
     List<Aluno> recuperarAlunosPorSlugDaTurma(@Param("slugTurma") String slugTurma);
+
+    @Query("""
+       SELECT a FROM Aluno a 
+       WHERE a.id NOT IN (
+           SELECT ia.aluno.id FROM Inscricao ia
+           WHERE ia.turma.id = :turmaId
+       )
+       AND (:nome IS NULL OR LOWER(a.nome) LIKE LOWER(CONCAT('%',:nome,'%')))
+       ORDER BY a.id
+       """)
+    List<Aluno> recuperarAlunosNaoInscritos(
+            @Param("turmaId") Long turmaId,
+            @Param("nome") String nome
+    );
 }
