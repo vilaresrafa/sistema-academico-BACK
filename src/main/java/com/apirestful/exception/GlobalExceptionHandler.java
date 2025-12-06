@@ -1,15 +1,16 @@
 package com.apirestful.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<String> handleEntidadeNaoEncontrada(EntidadeNaoEncontradaException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(new ErrorMsg(ex.getMessage()));
     }
+
+    record ErrorMsg(String message){}
 }

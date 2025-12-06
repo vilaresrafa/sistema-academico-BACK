@@ -20,6 +20,7 @@ public class ApirestfulApplication implements CommandLineRunner {
     private final TurmaRepository turmaRepository;
     private final InscricaoRepository inscricaoRepository;
     private final DisciplinaRepository disciplinaRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(ApirestfulApplication.class, args);
@@ -107,5 +108,23 @@ public class ApirestfulApplication implements CommandLineRunner {
         Inscricao i2 = new Inscricao(LocalDateTime.now(), a2, t2);
         inscricaoRepository.save(i1);
         inscricaoRepository.save(i2);
+
+        // ===============================
+        // USUÁRIOS PARA TESTE DO LOGIN
+        // ===============================
+
+        org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder =
+                new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+
+        Usuario admin = new Usuario("admin@gmail.com", encoder.encode("123456"), Role.ADMIN);
+
+        Usuario user = new Usuario("user@gmail.com", encoder.encode("123456"), Role.USER);
+
+        usuarioRepository.save(admin);
+        usuarioRepository.save(user);
+
+        System.out.println("Usuários de teste criados:");
+        System.out.println("ADMIN -> admin@gmail.com | senha: 123456");
+        System.out.println("USER  -> user@gmail.com | senha: 123456");
     }
 }
