@@ -55,4 +55,12 @@ public class AlunoService {
         return alunoRepository.recuperarAlunosPorSlugDaTurma(slugTurma);
     }
 
+    public List<Aluno> recuperarAlunosNaoInscritos(Long turmaId, String nome) {
+        if (turmaId == null) {
+            throw new IllegalArgumentException("Parâmetro turmaId é obrigatório.");
+        }
+        String filtroNome = (nome == null || nome.isBlank()) ? null : nome.trim();
+
+        return alunoRepository.recuperarAlunosNaoInscritos(turmaId, filtroNome);
+    }
 }

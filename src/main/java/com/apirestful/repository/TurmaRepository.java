@@ -33,5 +33,23 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
     @Query("SELECT t FROM Turma t WHERE LOWER(t.nome) LIKE LOWER(CONCAT('%', :nome, '%')) ORDER BY t.id")
     List<Turma> buscarPorNome(@Param("nome") String nome);
 
+    @Query("""
+            SELECT t FROM Turma t
+            WHERE t.disciplina.id = :disciplinaId
+            ORDER BY t.id
+            """)
+    List<Turma> buscarPorDisciplina(@Param("disciplinaId") Long disciplinaId);
+
+    @Query("""
+            SELECT t FROM Turma t
+            WHERE t.disciplina.id = :disciplinaId
+              AND LOWER(t.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+            ORDER BY t.id
+            """)
+    List<Turma> buscarPorNomeEDisciplina(
+            @Param("nome") String nome,
+            @Param("disciplinaId") Long disciplinaId
+    );
+
 
 }

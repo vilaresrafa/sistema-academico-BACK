@@ -43,4 +43,25 @@ public class TurmaService {
         return turmaRepository.buscarPorNome(nome);
     }
 
+    public List<Turma> recuperarTurmas(String nome, Long disciplinaId) {
+
+        // nome + disciplinaId
+        if (disciplinaId != null && nome != null && !nome.isBlank()) {
+            return turmaRepository.buscarPorNomeEDisciplina(nome, disciplinaId);
+        }
+
+        // apenas disciplinaId
+        if (disciplinaId != null) {
+            return turmaRepository.buscarPorDisciplina(disciplinaId);
+        }
+
+        // apenas nome
+        if (nome != null && !nome.isBlank()) {
+            return turmaRepository.buscarPorNome(nome);
+        }
+
+        // nenhum filtro
+        return turmaRepository.recuperarTurmas();
+    }
+
 }
