@@ -3,6 +3,7 @@ package com.apirestful.service;
 import com.apirestful.exception.EntidadeNaoEncontradaException;
 import com.apirestful.model.Aluno;
 import com.apirestful.repository.AlunoRepository;
+import com.apirestful.repository.InscricaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import java.util.List;
 public class AlunoService {
 
     private final AlunoRepository alunoRepository;
+    private final InscricaoRepository inscricaoRepository;
 
     //public AlunoService(AlunoRepository repository) {
     //    this.repository = repository;
@@ -38,6 +40,10 @@ public class AlunoService {
     }
 
     public void delete(Long id) {
+        // Remove todas as inscrições do aluno
+        inscricaoRepository.deleteByAlunoId(id);
+
+        // Agora remove o aluno
         alunoRepository.deleteById(id);
     }
 
