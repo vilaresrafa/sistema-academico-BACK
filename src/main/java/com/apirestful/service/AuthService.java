@@ -40,7 +40,7 @@ public class AuthService {
     }
 
     /** REGISTRO */
-    public Usuario registrar(String nome, String email, String senha) {
+    public Usuario registrar(String nome, String email, String senha, String role) {
         if (usuarioRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email já cadastrado!");
         }
@@ -48,7 +48,41 @@ public class AuthService {
         Usuario novo = new Usuario();
         novo.setEmail(email);
         novo.setSenha(passwordEncoder.encode(senha));
-        novo.setRole(Role.USER);
+        // Se role for fornecido, usa; senão, padrão é USER
+        novo.setRole(role != null && !role.isEmpty() ? Role.valueOf(role.toUpperCase()) : Role.USER);
+
+        return usuarioRepository.save(novo);
+    }
+
+    /** REGISTRO POR ADMIN - com validação de permissão */
+    public Usuario registrarPorAdmin(String nome, String email, String senha, String role, org.springframework.security.core.Authentication authentication) {
+        if (usuarioRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email já cadastrado!");
+        }
+
+        // Validar se quem está criando é ADMIN
+        boolean isAdmin = authentication.getAuthorities()
+                .stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            throw new RuntimeException("Apenas administradores podem criar usuários com roles customizados");
+        }
+
+        Usuario novo = new Usuario();
+        novo.setEmail(email);
+        novo.setSenha(passwordEncoder.encode(senha));
+
+        // Admin pode definir role livremente
+        if (role != null && !role.isEmpty()) {
+            try {
+                novo.setRole(Role.valueOf(role.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Role inválido. Use: USER ou ADMIN");
+            }
+        } else {
+            novo.setRole(Role.USER);
+        }
 
         return usuarioRepository.save(novo);
     }

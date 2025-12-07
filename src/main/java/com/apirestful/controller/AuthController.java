@@ -32,7 +32,14 @@ public class AuthController {
     /** REGISTRO — público */
     @PostMapping("/register")
     public Usuario register(@RequestBody @Valid RegisterRequest request) {
-        return authService.registrar(request.getNome(), request.getEmail(), request.getSenha());
+        return authService.registrar(request.getNome(), request.getEmail(), request.getSenha(), request.getRole());
+    }
+
+    /** CRIAR USUÁRIO — apenas ADMIN */
+    @PostMapping("/register-admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Usuario registerAdmin(@RequestBody @Valid RegisterRequest request, Authentication authentication) {
+        return authService.registrarPorAdmin(request.getNome(), request.getEmail(), request.getSenha(), request.getRole(), authentication);
     }
 
     /** PERFIL DO USUÁRIO AUTENTICADO */
