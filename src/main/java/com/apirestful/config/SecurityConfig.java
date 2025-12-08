@@ -13,6 +13,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableMethodSecurity
@@ -49,10 +53,33 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // permitir registro e login públicos
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         // outras rotas autenticadas
                         .requestMatchers("/alunos/**").authenticated()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String header = request.getHeader("Authorization");
+                            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                            System.out.println("[SecurityConfig] authenticationEntryPoint triggered for request: " + request.getMethod() + " " + request.getRequestURI());
+                            System.out.println("[SecurityConfig] Authorization header present: " + (header != null));
+                            System.out.println("[SecurityConfig] SecurityContext authentication: " + auth);
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            String header = request.getHeader("Authorization");
+                            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                            System.out.println("[SecurityConfig] accessDeniedHandler triggered for request: " + request.getMethod() + " " + request.getRequestURI());
+                            System.out.println("[SecurityConfig] Authorization header present: " + (header != null));
+                            System.out.println("[SecurityConfig] SecurityContext authentication: " + auth);
+                            if (header == null || !header.startsWith("Bearer ")) {
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            } else {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                            }
+                        })
                 )
                 .authenticationManager(authenticationManager());
 

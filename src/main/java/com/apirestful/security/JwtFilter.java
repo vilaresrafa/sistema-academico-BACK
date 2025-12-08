@@ -33,18 +33,27 @@ public class JwtFilter extends OncePerRequestFilter {
             token = header.substring(7);
             try {
                 username = jwtUtil.getEmailFromToken(token);
+                System.out.println("[JwtFilter] Request: " + request.getMethod() + " " + request.getRequestURI());
+                System.out.println("[JwtFilter] Authorization header present. extracted token (len): " + (token != null ? token.length() : 0));
+                System.out.println("[JwtFilter] Extracted username from token: " + username);
             } catch (Exception e) {
                 // inválido — segue para entry point
+                System.out.println("[JwtFilter] Failed to extract username from token: " + e.getMessage());
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.validateToken(token)) {
+            boolean valid = jwtUtil.validateToken(token);
+            System.out.println("[JwtFilter] Token validation result: " + valid);
+            if (valid) {
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                System.out.println("[JwtFilter] Authentication set for user: " + userDetails.getUsername() + " authorities=" + userDetails.getAuthorities());
+            } else {
+                System.out.println("[JwtFilter] Token invalid for user: " + username);
             }
         }
 
